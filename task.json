@@ -1,0 +1,20 @@
+{
+  "id": "lab-task-001",
+  "issued_at": "2025-09-27T12:00:00Z",
+  "tasks": [
+    {
+      "action": "print",
+      "message": "Hello from lab JSON: this is a benign message."
+    },
+    {
+      "action": "list_dir",
+      "path": "C:\\",
+      "max_items": 10
+    },
+    {
+      "action": "fetch_info",
+      "url": "https://raw.githubusercontent.com/your-org/lab-files/main/sample.txt"
+    }
+  ],
+  "notes": "Allowed actions: print, list_dir, fetch_info. This JSON is safe for in-memory parsing only."
+}
