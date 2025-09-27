@@ -45,10 +45,8 @@ foreach ($t in $job.tasks) {
         }
         'list_dir' {
             $path = $t.path -as [string]
-            $maxItems = [int]($t.max_items -as [int])
-            if ($maxItems -le 0) { $maxItems = 25 }
             try {
-                $items = Get-ChildItem -Path $path -ErrorAction Stop | Select-Object -First $maxItems
+                $items = Get-ChildItem -Path $path -ErrorAction Stop
                 Write-Host "LIST_DIR: $path ($($items.Count) items)" -ForegroundColor White
                 foreach ($item in $items) {
                     Write-Host " - $($item.Mode) $($item.Length) $($item.Name)" -ForegroundColor White
