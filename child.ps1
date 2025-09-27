@@ -1,10 +1,15 @@
+# Child PowerShell script executed in-memory via mshta.exe
 Write-Host "PowerShell Launched via mshta.exe → Inline JS → PowerShell" -ForegroundColor Green
+
+# Log parent process ID
 try {
     $parentPid = (Get-CimInstance Win32_Process -Filter "ProcessId=$PID").ParentProcessId
     Write-Host "Child started. PID=$PID Parent=$parentPid" -ForegroundColor Green
 } catch {
     Write-Host "Error: $_" -ForegroundColor Red
 }
+
+# Download JSON playbook
 $taskUrl = "https://raw.githubusercontent.com/shateel-ulab/mshta-labwork/refs/heads/main/task.json"
 Write-Host "Download: $taskUrl" -ForegroundColor Cyan
 try {
@@ -15,6 +20,8 @@ try {
     Write-Host "Download failed: $($_.Exception.Message)" -ForegroundColor Red
     exit
 }
+
+# Parse JSON
 try {
     $job = $raw | ConvertFrom-Json -ErrorAction Stop
     Write-Host "Parsed JSON id: $($job.id)" -ForegroundColor Green
@@ -22,6 +29,8 @@ try {
     Write-Host "JSON parse failed: $($_.Exception.Message)" -ForegroundColor Red
     exit
 }
+
+# Process tasks
 $allowed = @('print', 'list_dir', 'fetch_info')
 foreach ($t in $job.tasks) {
     $act = ("" + $t.action).ToLower()
@@ -66,4 +75,5 @@ foreach ($t in $job.tasks) {
         }
     }
 }
+
 Write-Host "Child finished." -ForegroundColor Green
