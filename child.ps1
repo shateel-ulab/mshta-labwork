@@ -1,5 +1,5 @@
 # Child PowerShell script executed in-memory via mshta.exe
-Write-Host "PowerShell Launched via mshta.exe → Inline JS → PowerShell" -ForegroundColor Green
+Write-Host "PowerShell Launched via mshta.exe -> Inline JS -> PowerShell" -ForegroundColor Green
 
 # Log parent process ID
 try {
